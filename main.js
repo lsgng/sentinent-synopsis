@@ -51,7 +51,7 @@ async function summarizeResults(documents, summarizationGroupSize) {
     return documents[0];
   }
 
-  let summarizedResults = [];
+  const summarizationPromises = [];
 
   for (let i = 0; i < documents.length; i += summarizationGroupSize) {
     let combinedText = "";
@@ -70,10 +70,10 @@ async function summarizeResults(documents, summarizationGroupSize) {
       character: CHARACTER,
     });
 
-    const result = await model.call(prompt);
-
-    summarizedResults.push(result);
+    summarizationPromises.push(model.call(prompt));
   }
+
+  const summarizedResults = await Promise.all(summarizationPromises);
 
   console.log(
     `Summarized ${documents.length} documents into ${summarizedResults.length} documents.`
