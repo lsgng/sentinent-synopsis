@@ -1,12 +1,9 @@
 {
-  "name": "gpt-embeddings-test",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "sentinent-synopsis",
+  "version": "0.0.1",
+  "main": "synopsis.js",
   "license": "MIT",
   "type": "module",
-  "scripts": {
-    "trace": "node main.js"
-  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "langchain": "^0.0.48",

@@ -1,17 +1,16 @@
-# GPT Character Tracing
+# Sentinent Synopsis
 
-Simple script to trace a character throughout a text.
+Use GPT to trace a character throughout a narrative text and generate a summary of their actions and personality.
 
-This script finds all passages mentioning a given a specified character in a given text. It then recursively summarizes those passages and returns a final summary.
+Splits the input text into chunks, then recursively summarizes them.
 
 ## Usage
 
-1. Put the input text into `input.txt` or specify a different file using the `INPUT_TEXT` variable.
-2. Specify the character name to trace using the `CHARACTER` variable.
-3. Optional: Specify additional options (`CHUNK_OVERLAP`, `CHUNK_SIZE`, `SUMMARIZATION_GROUP_SIZE`)
-3. Run the script: `yarn trace`
+1. Create a `.env` file containing your OpenAI API key:
+    
+        OPENAI_API_KEY=sk-...
 
-## Observations
-
-- The script is not very efficient. Tracing longer texts will take a lot of time and might result in significant token usage.
-- Limited quality of summary. Especially longer texts will often result in inconsistent summaries containing unnecessary details while leaving out important high-level information.
+2. Run the script providing the input `*.txt` file and the character name:
+    
+        node synopsis.js -i <input_file> -c <character_name>
+        
