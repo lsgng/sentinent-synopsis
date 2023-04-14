@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "langchain": "^0.0.48"
+    "langchain": "^0.0.48",
+    "yargs": "^17.7.1"
   }
 }

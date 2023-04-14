@@ -3,17 +3,31 @@ import { PromptTemplate } from "langchain";
 import { TextLoader } from "langchain/document_loaders";
 import { OpenAI } from "langchain/llms";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
+const CHUNK_OVERLAP = 200;
+const CHUNK_SIZE = 2000;
+const SUMMARIZATION_GROUP_SIZE = 4;
 
 dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-const INPUT_TEXT = "input.txt";
-const CHARACTER_NAME = "Stratton";
+const args = yargs(hideBin(process.argv))
+  .alias("i", "input")
+  .alias("c", "character")
+  .parse();
 
-const CHUNK_OVERLAP = 200;
-const CHUNK_SIZE = 2000;
+const INPUT_TEXT = args.input;
+const CHARACTER_NAME = args.character;
 
-const SUMMARIZATION_GROUP_SIZE = 4;
+if (!INPUT_TEXT || !CHARACTER_NAME) {
+  console.log(
+    "Please provide an input text file and a character name to summarize."
+  );
+  console.log("Example: node main.js -i ./input.txt -c Harry");
+  process.exit(1);
+}
 
 const loader = new TextLoader(INPUT_TEXT);
 const rawText = await loader.load();
@@ -29,9 +43,14 @@ const filteredDocuments = documents.filter((doc) => {
   return doc.pageContent.includes(CHARACTER_NAME);
 });
 
-console.log(
-  `Found ${filteredDocuments.length} documents containing "${CHARACTER_NAME}"\n`
-);
+if (filteredDocuments.length === 0) {
+  console.log(`No documents containing "${CHARACTER_NAME}" found.`);
+  process.exit(1);
+} else {
+  console.log(
+    `Found ${filteredDocuments.length} documents containing "${CHARACTER_NAME}"\n`
+  );
+}
 
 const model = new OpenAI({
   temperature: 0,
