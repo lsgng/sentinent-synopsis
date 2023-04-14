@@ -40,7 +40,7 @@ const model = new OpenAI({
 });
 
 const template =
-  "You are an expert in describing characters and summarizing their actions in a literary text. Your task is to give a brief and concise summary of the actions of the character {character} in the following text. Focus only on the character {character} and ignore all irrelevant actions of other characters. Summarize the text in a way that it is understandable and makes sense for a person who does not know the rest of the text. TEXT: {text}";
+  "Give a breif, concise and consistent summary of the character {character} in the following text, including relevant actions and personality traits.\n TEXT: {text}\n SUMMARY: ";
 const promptTemplate = new PromptTemplate({
   template,
   inputVariables: ["character", "text"],
