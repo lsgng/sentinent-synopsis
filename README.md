@@ -7,7 +7,7 @@ This script finds all passages mentioning a given a specified character in a giv
 ## Usage
 
 1. Put the input text into `input.txt` or specify a different file using the `INPUT_TEXT` variable.
-2. Specify the character to trace using the `CHARACTER` variable.
+2. Specify the character name to trace using the `CHARACTER` variable.
 3. Optional: Specify additional options (`CHUNK_OVERLAP`, `CHUNK_SIZE`, `SUMMARIZATION_GROUP_SIZE`)
 3. Run the script: `yarn trace`
 

@@ -8,7 +8,7 @@ dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const INPUT_TEXT = "input.txt";
-const CHARACTER = "Mustapha";
+const CHARACTER_NAME = "Stratton";
 
 const CHUNK_OVERLAP = 200;
 const CHUNK_SIZE = 2000;
@@ -26,11 +26,11 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 const documents = await textSplitter.splitDocuments(rawText);
 
 const filteredDocuments = documents.filter((doc) => {
-  return doc.pageContent.includes(CHARACTER);
+  return doc.pageContent.includes(CHARACTER_NAME);
 });
 
 console.log(
-  `Found ${filteredDocuments.length} documents containing "${CHARACTER}"`
+  `Found ${filteredDocuments.length} documents containing "${CHARACTER_NAME}"\n`
 );
 
 const model = new OpenAI({
@@ -40,7 +40,7 @@ const model = new OpenAI({
 });
 
 const template =
-  "Give a breif, concise and consistent summary of the character {character} in the following text, including relevant actions and personality traits.\n TEXT: {text}\n SUMMARY: ";
+  "Give a brief, concise and consistent summary of the character {character} in the following text, including relevant actions and personality traits.\n TEXT: {text}\n SUMMARY: ";
 const promptTemplate = new PromptTemplate({
   template,
   inputVariables: ["character", "text"],
@@ -51,6 +51,13 @@ async function summarizeResults(documents, summarizationGroupSize) {
     return documents[0];
   }
 
+  console.log(
+    documents.length / summarizationGroupSize > 1
+      ? `Summarizing ${documents.length} documents into ${Math.ceil(
+          documents.length / summarizationGroupSize
+        )} documents...`
+      : "Creating final summary..."
+  );
   const summarizationPromises = [];
 
   for (let i = 0; i < documents.length; i += summarizationGroupSize) {
@@ -67,17 +74,13 @@ async function summarizeResults(documents, summarizationGroupSize) {
 
     const prompt = await promptTemplate.format({
       text: combinedText,
-      character: CHARACTER,
+      character: CHARACTER_NAME,
     });
 
     summarizationPromises.push(model.call(prompt));
   }
 
   const summarizedResults = await Promise.all(summarizationPromises);
-
-  console.log(
-    `Summarized ${documents.length} documents into ${summarizedResults.length} documents.`
-  );
 
   return summarizeResults(summarizedResults, summarizationGroupSize);
 }
@@ -86,4 +89,4 @@ const text = filteredDocuments.map((doc) => doc.pageContent);
 
 const summary = await summarizeResults(text, SUMMARIZATION_GROUP_SIZE);
 
-console.log("\nSummary:\n\n", summary);
+console.log(`\nSummary for ${CHARACTER_NAME}:\n\n`, summary);
