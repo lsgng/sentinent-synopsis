@@ -86,4 +86,4 @@ const text = filteredDocuments.map((doc) => doc.pageContent);
 
 const summary = await summarizeResults(text, SUMMARIZATION_GROUP_SIZE);
 
-console.log("\n\nSummary:\n\n", summary);
+console.log("\nSummary:\n\n", summary);
