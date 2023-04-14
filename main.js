@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { PromptTemplate } from "langchain";
 import { TextLoader } from "langchain/document_loaders";
 import { OpenAI } from "langchain/llms";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -7,7 +8,7 @@ dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const INPUT_TEXT = "input.txt";
-const CHARACTER = "Lenina";
+const CHARACTER = "Mustapha";
 
 const CHUNK_OVERLAP = 200;
 const CHUNK_SIZE = 2000;
@@ -38,8 +39,12 @@ const model = new OpenAI({
   openAIApiKey: OPENAI_API_KEY,
 });
 
-const getPrompt = (character, text) =>
-  `You are an expert in describing characters and summarizing their actions in a literary text. Your task is to give a brief and concise summary of the actions of the character ${character} in the following text. Focus only on the character ${character} and ignore all irrelevant actions of other characters. Summarize the text in a way that it is understandable and makes sense for a person who does not know the rest of the text. TEXT: ${text}`;
+const template =
+  "You are an expert in describing characters and summarizing their actions in a literary text. Your task is to give a brief and concise summary of the actions of the character {character} in the following text. Focus only on the character {character} and ignore all irrelevant actions of other characters. Summarize the text in a way that it is understandable and makes sense for a person who does not know the rest of the text. TEXT: {text}";
+const promptTemplate = new PromptTemplate({
+  template,
+  inputVariables: ["character", "text"],
+});
 
 async function summarizeResults(documents, summarizationGroupSize) {
   if (documents.length === 1) {
@@ -59,8 +64,14 @@ async function summarizeResults(documents, summarizationGroupSize) {
       combinedText +=
         documents[i + j] + (j < elementsToCombine - 1 ? "\n" : "");
     }
-    const prompt = getPrompt(CHARACTER, combinedText);
+
+    const prompt = await promptTemplate.format({
+      text: combinedText,
+      character: CHARACTER,
+    });
+
     const result = await model.call(prompt);
+
     summarizedResults.push(result);
   }
 
@@ -75,4 +86,4 @@ const text = filteredDocuments.map((doc) => doc.pageContent);
 
 const summary = await summarizeResults(text, SUMMARIZATION_GROUP_SIZE);
 
-console.log(summary);
+console.log("\n\nSummary:\n\n", summary);
